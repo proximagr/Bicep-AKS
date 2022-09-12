@@ -1,0 +1,27 @@
+az account show -o table
+
+az account set --subscription papostolidis-azinternal
+
+az group create --name exampleRG --location eastus
+
+az deployment group create --resource-group exampleRG --template-file main.bicep --parameters storageName=uniquename
+
+az group delete
+
+
+az account list-locations --query "[?metadata.geographyGroup=='Europe'].name"
+
+
+az deployment sub create --template-file .\main.bicep --location westeurope --name pantelis
+
+az bicep decompile --file .\keyvalt.json
+
+
+Queries
+
+az vm list-sizes --location "West Europe" --query [].name -o table
+
+
+az deployment group create --template-file .\main.bicep -g AKSKubenetTest --name aks1
+
+az network vnet subnet list -g AKSKubenetTest1 --vnet-name aksvnet

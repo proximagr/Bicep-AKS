@@ -33,7 +33,7 @@ param systemOsDiskSizeGB int = 80
 param systemAgentCount int = 2
 
 @description('SKU of the system agent VMs')
-param systemAgentVMSize string = 'Standard_DS2_v2'
+param systemAgentVMSize string = 'Standard_D4d_v5'
 
 @minValue(30)
 @maxValue(250)
@@ -58,7 +58,7 @@ param userAgentCount int = 3
 param userMaxPods int = 90
 
 @description('SKU of the user agent VMs')
-param userAgentVMSize string = 'Standard_DS2_v2'
+param userAgentVMSize string = 'Standard_D4d_v5'
 
 @description('A CIDR notation IP range from which to assign service cluster IPs. It must not overlap with any Subnet IP ranges. It can be any private network CIDR such as, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 ')
 param serviceCidr string = '10.255.0.0/16'
@@ -86,7 +86,7 @@ resource aks_workspace 'Microsoft.OperationalInsights/workspaces@2020-08-01' = {
   }
 }
 
-resource aks 'Microsoft.ContainerService/managedClusters@2022-07-02-preview' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2022-07-01' = {
   name: aksName
   location: location
   tags: tags
