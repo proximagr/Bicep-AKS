@@ -3,6 +3,9 @@ param aksName string
 param tags object
 param isAksPrivate bool
 
+@description('The log analytics workspace of AKS (for container monitoring etc)')
+param aksWSName string 
+
 @description('Provide the ID of the Subnet. Can be found at the Azure Portal, Properties')
 param vnetSubnetID string
 
@@ -57,7 +60,31 @@ param userMaxPods int = 90
 @description('SKU of the user agent VMs')
 param userAgentVMSize string = 'Standard_DS2_v2'
 
+@description('A CIDR notation IP range from which to assign service cluster IPs. It must not overlap with any Subnet IP ranges. It can be any private network CIDR such as, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 ')
+param serviceCidr string = '10.255.0.0/16'
 
+@description('An IP address assigned to the Kubernetes DNS service. It must be within the Kubernetes service address range specified in serviceCidr')
+param dnsServiceIP string = '10.255.0.10'
+
+@description('A CIDR notation IP range from which to assign pod IPs when kubenet is used.')
+param podCidr string = '10.254.0.0/16'
+
+@description('A CIDR notation IP range assigned to the Docker bridge network. It must not overlap with any Subnet IP ranges or the Kubernetes service address range.')
+param dockerBridgeCidr string = '172.31.0.1/16'
+
+resource aks_workspace 'Microsoft.OperationalInsights/workspaces@2020-08-01' = {
+  name: aksWSName
+  location: location
+  tags: tags
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+  }
+}
 
 resource aks 'Microsoft.ContainerService/managedClusters@2022-07-02-preview' = {
   name: aksName
@@ -122,7 +149,30 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-07-02-preview' = {
       clientId: 'msi'
     }
     networkProfile: {
-      networkPlugin: 
+      networkPlugin: 'kubenet'
+      loadBalancerSku: 'standard'
+      serviceCidr: serviceCidr
+      dnsServiceIP: dnsServiceIP
+      podCidr: podCidr
+      dockerBridgeCidr: dockerBridgeCidr
+    }
+    addonProfiles: {
+      omsagent: {
+      config: {
+        logAnalyticsWorkspaceResourceID: aks_workspace.id
+    }
+    enabled: true
+    }
     }
   }
+}
+
+output aksID string = aks.id
+output aksName string = aks.name
+output apiServerAddress string = isAksPrivate ? aks.properties.privateFQDN : ''
+output aksNodesRG string = aks.properties.nodeResourceGroup
+output identity object = {
+  tenantId: aks.identity.tenantId
+  principalId: aks.identity.principalId
+  type: aks.identity.type
 }
