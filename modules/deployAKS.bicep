@@ -2,12 +2,11 @@ param location string
 param aksName string
 param tags object
 param isAksPrivate bool
+param kubenet bool
+var networkPlugIn = kubenet ? 'kubenet' : 'azure'
 
 @description('The log analytics workspace of AKS (for container monitoring etc)')
 param aksWSName string 
-
-@description('Provide the ID of the Subnet. Can be found at the Azure Portal, Properties')
-param vnetSubnetID string
 
 @description('Whether to enable Kubernetes Role-Based Access Control')
 param enableRBAC bool = true
@@ -20,7 +19,7 @@ param aksdnsPrefix string
 @description('Name of the resource group containing agent pool nodes')
 param aksManagedRG string
 
-//Sytem node settings
+//Sytem node pool settings
 
 @minValue(0)
 @maxValue(1023)
@@ -40,7 +39,7 @@ param systemAgentVMSize string = 'Standard_D4d_v5'
 @description('Maximum number of pods that can run on a system node')
 param systemMaxPods int = 30
 
-//User node settings
+//User node pool settings
 
 @minValue(0)
 @maxValue(1023)
@@ -59,6 +58,11 @@ param userMaxPods int = 90
 
 @description('SKU of the user agent VMs')
 param userAgentVMSize string = 'Standard_D4d_v5'
+
+// Networking Settings
+
+@description('Provide the ID of the Subnet. Can be found at the Azure Portal, Properties')
+param vnetSubnetID string
 
 @description('A CIDR notation IP range from which to assign service cluster IPs. It must not overlap with any Subnet IP ranges. It can be any private network CIDR such as, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 ')
 param serviceCidr string = '10.255.0.0/16'
@@ -149,7 +153,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-07-01' = {
       clientId: 'msi'
     }
     networkProfile: {
-      networkPlugin: 'kubenet'
+      networkPlugin: networkPlugIn
       loadBalancerSku: 'standard'
       serviceCidr: serviceCidr
       dnsServiceIP: dnsServiceIP

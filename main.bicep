@@ -35,8 +35,10 @@ param aksWSName string
 param isAksPrivate bool
 @description('Provide the ID of the Subnet. Can be found at the Azure Portal, Properties')
 param vnetSubnetID string
+@description('True for kubenet, False for Azure CNI')
+param kubenet bool
 
-module aks 'modules/deployAKS-kubenet.bicep' = {
+module aks 'modules/deployAKS.bicep' = {
   name: 'AKS-Kubenet-Deployment'
   scope: resourceGroup()
   params: {
@@ -48,5 +50,6 @@ module aks 'modules/deployAKS-kubenet.bicep' = {
     location: location
     tags: tags
     vnetSubnetID: vnetSubnetID
+    kubenet: kubenet
   }
 }
