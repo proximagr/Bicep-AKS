@@ -21,9 +21,10 @@ Queries
 
 az vm list-sizes --location "West Europe" --query [].name -o table
 
+az group create --name akstesting4 --location westeurope
 
-az deployment group create --template-file .\main.bicep -g akstesting --name aks1
+az deployment group create --template-file .\main.bicep -g akstesting4 --name aks4
 
-az network vnet subnet list -g akstesting --vnet-name aksvnet
+az network vnet subnet list -g asktestvnet --vnet-name aksvnet
 
-/subscriptions/ca7f7c8a-840c-415d-96cf-ad53dff20b8c/resourceGroups/akstesting/providers/Microsoft.Network/virtualNetworks/aksvnet/subnets/default
+/subscriptions/ca7f7c8a-840c-415d-96cf-ad53dff20b8c/resourceGroups/asktestvnet/providers/Microsoft.Network/virtualNetworks/aksvnet/subnets/akssubnet

@@ -61,7 +61,7 @@ param userAgentVMSize string = 'Standard_D4d_v5'
 
 // Networking Settings
 
-@description('Provide the ID of the Subnet. Can be found at the Azure Portal, Properties')
+@description('Provide the ID of the Node Subnet. az network vnet subnet list -g asktestvnet --vnet-name aksvnet')
 param vnetSubnetID string
 
 @description('A CIDR notation IP range from which to assign service cluster IPs. It must not overlap with any Subnet IP ranges. It can be any private network CIDR such as, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 ')
