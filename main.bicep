@@ -11,10 +11,10 @@ param acrName string
   'Premium'
 ])
 @description('Tier of your Azure Container Registry. Select Premium to use Private Endpoint')
-param acrSKU string
+param acrSKU string = 'Premium'
 
 @description('Enable admin user that have push / pull permission to the ARC')
-param acradminUserEnabled bool
+param acradminUserEnabled bool = true
 
 @allowed([
   'swedencentral'
